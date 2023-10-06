@@ -74,7 +74,6 @@ public class CompteEpargneImp extends CompteImp implements CompteEpargneI {
                 compteEpargne.setDateCreation(resultSet.getDate("datecreation").toLocalDate());
                 compteEpargne.setEtat(Etat.valueOf(resultSet.getString("etat")));
                 compteEpargne.setTauxInteret(resultSet.getDouble("tauxinteret"));
-
                 return compteEpargne;
             }
         } catch (SQLException ex) {
