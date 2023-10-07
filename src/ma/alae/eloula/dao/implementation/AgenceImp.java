@@ -66,4 +66,33 @@ public class AgenceImp implements AgenceI {
         }
     }
 
+    @Override
+    public Optional<Agence> findAgenceById(int agenceId) {
+        try {
+            String query = "SELECT * FROM agence WHERE id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setInt(1, agenceId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                Agence agence = new Agence();
+                agence.setId(resultSet.getInt("id"));
+                agence.setNom(resultSet.getString("nom"));
+                agence.setAdresse(resultSet.getString("adresse"));
+                agence.setTel(resultSet.getString("tel"));
+
+                return Optional.of(agence);
+            } else {
+                return Optional.empty(); // Aucune agence trouvée avec cet ID
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Gérer les exceptions liées à la base de données
+            return Optional.empty();
+        }
+    }
+
+
 }

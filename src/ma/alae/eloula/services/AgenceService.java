@@ -28,4 +28,8 @@ public class AgenceService {
         // Ajoutez ici une éventuelle validation ou vérification avant la suppression
         return agenceDao.deleteAgence(agenceId);
     }
+    public Optional<Agence> findAgenceById(int agenceId) {
+        return agenceDao.findAgenceById(agenceId);
+    }
+
 }

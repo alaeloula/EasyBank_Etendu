@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface AgenceI {
     Optional<Agence> createAgence(Agence agence);
     boolean deleteAgence(int agenceId);
+    public Optional<Agence> findAgenceById(int agenceId);
 }

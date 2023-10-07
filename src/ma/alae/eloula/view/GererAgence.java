@@ -16,6 +16,7 @@ public class GererAgence
 {
     Scanner scanner=new Scanner(System.in);
     private AgenceI agenceDao= new AgenceImp();
+    private Agence agence = new Agence();
     AgenceService agenceService=new AgenceService(agenceDao);
 
 
@@ -26,7 +27,7 @@ public class GererAgence
             System.out.println("=== Menu de Gestion des Agence ===");
             System.out.println("1. Creer une Agence");
             System.out.println("2. supprimer une agence ");
-            System.out.println("3. Rechercher une opération par ID");
+            System.out.println("3. Rechercher une agence par ID");
 
             System.out.println("0. Retour au menu principal");
             System.out.print("Entrez votre choix : ");
@@ -37,7 +38,7 @@ public class GererAgence
             switch (choix) {
                 case 1:
                     // Effectuer un versement
-                    Agence agence = new Agence();
+
                     System.out.print("Le nomde l agence : ");
                     agence.setNom(scanner.nextLine());
                     System.out.print("Entrez l'adresse' : ");
@@ -46,8 +47,8 @@ public class GererAgence
                     agence.setTel(scanner.nextLine());
                     Optional<Agence> resultatCreation = agenceService.createAgence(agence);
 
-                    resultatCreation.ifPresent(ag -> {
-                        System.out.println("L'agence " + ag.getNom() + " a été créée avec succès.");
+                    resultatCreation.ifPresent(agence -> {
+                        System.out.println("L'agence " + agence.getNom() + " a été créée avec succès.");
                     });
                     break;
                 case 2:
@@ -61,6 +62,17 @@ public class GererAgence
                     }
                     break;
                 case 3:
+                    System.out.println("entrer l id du l agence");
+                     agenceId=Helper.getInputInt(scanner);
+                    Optional<Agence> agenceOptional = agenceService.findAgenceById(agenceId);
+
+                    agenceOptional.ifPresent(agence -> {
+                        System.out.println("Agence trouvée : " + agence.getNom());
+                    });
+
+                    if (!agenceOptional.isPresent()) {
+                        System.out.println("Aucune agence trouvée avec cet ID.");
+                    }
 
                     break;
 
