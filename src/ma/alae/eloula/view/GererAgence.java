@@ -12,12 +12,11 @@ import ma.alae.eloula.services.AgenceService;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class GererAgence
-{
-    Scanner scanner=new Scanner(System.in);
-    private AgenceI agenceDao= new AgenceImp();
+public class GererAgence {
+    Scanner scanner = new Scanner(System.in);
+    private AgenceI agenceDao = new AgenceImp();
     private Agence agence = new Agence();
-    AgenceService agenceService=new AgenceService(agenceDao);
+    AgenceService agenceService = new AgenceService(agenceDao);
 
 
     public GererAgence() {
@@ -28,7 +27,8 @@ public class GererAgence
             System.out.println("1. Creer une Agence");
             System.out.println("2. supprimer une agence ");
             System.out.println("3. Rechercher une agence par ID");
-
+            System.out.println("4. Affecter un employee a une agence");
+            System.out.println("5. muter un employee vers une agence");
             System.out.println("0. Retour au menu principal");
             System.out.print("Entrez votre choix : ");
 
@@ -63,7 +63,7 @@ public class GererAgence
                     break;
                 case 3:
                     System.out.println("entrer l id du l agence");
-                     agenceId=Helper.getInputInt(scanner);
+                    agenceId = Helper.getInputInt(scanner);
                     Optional<Agence> agenceOptional = agenceService.findAgenceById(agenceId);
 
                     agenceOptional.ifPresent(agence -> {
@@ -75,6 +75,34 @@ public class GererAgence
                     }
 
                     break;
+
+                case 4:
+                    System.out.println("entrer l id du l'employee");
+                    int employeeId = Helper.getInputInt(scanner);
+                    if (agenceService.isEmployeeCurrentlyAssigned(employeeId)) {
+
+                        // L'employé est déjà affecté à une agence
+                        System.out.println("L'employé est déjà affecté à une agence.");
+                    } else {
+                        System.out.println("entrer l'id du l agence");
+                        agenceId=Helper.getInputInt(scanner);
+                        if(agenceService.affecterEmployeeAAgence(employeeId,agenceId,null)){
+                            System.out.println("L'employé est bien affecté à une agence.");
+                        }else
+                            System.out.println("erreur de l affectation");
+                    }
+                    break;
+                case 5:
+                    System.out.println("entrer l id du l'employee");
+                     employeeId = Helper.getInputInt(scanner);
+                     System.out.println("entrer l id du lagence");
+                     agenceId = Helper.getInputInt(scanner);
+                     if (agenceService.muterEmployeeVersNouvelleAgence(employeeId,agenceId)){
+
+                         System.out.println("L'employé est bien muter vers la nouvelle  agence.");
+                     }else
+                         System.out.println("erreur de l affectation");
+                        break;
 
                 case 0:
                     System.out.println("Retour au menu principal.");

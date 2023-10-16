@@ -1,8 +1,12 @@
 package ma.alae.eloula.view;
 
+import ma.alae.eloula.classes.Agence;
 import ma.alae.eloula.classes.Employee;
+import ma.alae.eloula.dao.Interfaces.AgenceI;
+import ma.alae.eloula.dao.implementation.AgenceImp;
 import ma.alae.eloula.dao.implementation.EmployeImp;
 import ma.alae.eloula.helpers.Helper;
+import ma.alae.eloula.services.AgenceService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +18,9 @@ public class GererEmployes {
     Scanner scanner=new Scanner(System.in);
     //Employee e1 =new Employee();
     EmployeImp eimp=new EmployeImp();
+    private AgenceI agenceDao= new AgenceImp();
+    private Agence agence = new Agence();
+    AgenceService agenceService=new AgenceService(agenceDao);
     public GererEmployes() {
         int choixEmploye;
 
@@ -33,18 +40,6 @@ public class GererEmployes {
             switch (choixEmploye) {
                 case 1:
                     // Ajouter un employé
-                    // Ajoutez ici votre logique pour ajouter un employé
-                   /* Employee e1 =new Employee();
-                    e1.setNom("USER");
-                    e1.setPrenom("USER");
-                    e1.setTel("06000000");
-                    e1.setDateNaissance(LocalDate.parse("2020-03-03"));
-                    e1.setDateRecrutement(LocalDate.parse("2022-03-03"));
-                    e1.setEmail("user@user.com");
-                    eimp.ajouterEmployee(e1);*/
-                    //Scanner scanner = new Scanner(System.in);
-                    //1EmployeImp eimp = new EmployeImp();
-
                     System.out.println("Création d'un nouvel employé :");
 
                     System.out.print("Entrez le nom de l'employé : ");
@@ -67,6 +62,9 @@ public class GererEmployes {
                     System.out.print("Entrez l'email de l'employé : ");
                     String email = scanner.nextLine();
 
+                    System.out.print("Entrez l'id de l'agence : ");
+                    int agenceId =Helper.getInputInt(scanner);
+
                     Employee nouvelEmployee = new Employee();
                     nouvelEmployee.setNom(nom);
                     nouvelEmployee.setPrenom(prenom);
@@ -76,13 +74,16 @@ public class GererEmployes {
                     nouvelEmployee.setEmail(email);
 
                     Optional<Employee> employeeOptional = eimp.ajouterEmployee(nouvelEmployee);
+                    Employee newEmployee = employeeOptional.get();
                     if (employeeOptional.isPresent()) {
-                        Employee newEmployee = employeeOptional.get();
-                        System.out.println("L'employé a été ajouté avec succès !");
+
+                        System.out.println("L'employé a été ajouté avec succès ! son id :"+newEmployee.getId()+"");
                         //System.out.println("ID de l'employé : " + newEmployee.getId());
                     } else {
                         System.err.println("Erreur lors de l'ajout de l'employé.");
                     }
+                    agenceService.affecterEmployeeAAgence(newEmployee.getId(),agenceId,null);
+
                     break;
                 case 2:
                     // Supprimer un employé
@@ -141,24 +142,6 @@ public class GererEmployes {
                     break;
                 case 5:
                     // Mettre à jour un employé
-                    // Ajoutez ici votre logique pour mettre à jour un employé
-                   /* System.out.println("entreer id");
-                    Employee employeeToUpdate = eimp.findEmployeeById(getInputAsInt(scanner));
-                    //employeeToUpdate.setId(1); // Remplacez par l'ID de l'employé que vous souhaitez mettre à jour
-                    employeeToUpdate.setNom("NouveauNom");
-                    employeeToUpdate.setPrenom("NouveauPrenom");
-                    employeeToUpdate.setEmail("nouveau@email.com");
-                    employeeToUpdate.setDateRecrutement(LocalDate.now()); // Date actuelle
-                    employeeToUpdate.setDateNaissance(LocalDate.of(1990, 5, 15)); // Date de naissance fictive
-                    employeeToUpdate.setTel("1234567890"); // Numéro de téléphone fictif
-
-                    boolean updateSuccess = eimp.modifierEmployee(employeeToUpdate);
-
-                    if (updateSuccess) {
-                        System.out.println("L'employé a été mis à jour avec succès.");
-                    } else {
-                        System.out.println("La mise à jour de l'employé a échoué.");
-                    }*/
                     System.out.println("Veuillez entrer l'ID de l'employé que vous souhaitez mettre à jour : ");
                     int employeeIdToUpdate = Helper.getInputInt(scanner);
 
@@ -195,6 +178,7 @@ public class GererEmployes {
                         System.out.println("Aucun employé trouvé avec l'ID : " + employeeIdToUpdate);
                     }
                     break;
+
                 case 0:
                     System.out.println("Retour au menu principal.");
                     break;

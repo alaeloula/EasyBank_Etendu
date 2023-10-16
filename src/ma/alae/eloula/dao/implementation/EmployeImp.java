@@ -29,18 +29,19 @@ public class EmployeImp implements Personel {
             if (personelRowsAffected == 1) {
                 ResultSet generatedPersonelKeys = personelStatement.getGeneratedKeys();
                 if (generatedPersonelKeys.next()) {
-                    int personelId = generatedPersonelKeys.getInt(1);
+                    employee.setId(generatedPersonelKeys.getInt(1));
 
                     // Ensuite, insérez les données dans la table "Employee" avec l'ID de "Personel"
                     String employeeSql = "INSERT INTO Employee (id, email, dateRecrutement) VALUES (?, ?, ?)";
                     PreparedStatement employeeStatement = connection.prepareStatement(employeeSql);
-                    employeeStatement.setInt(1, personelId); // Utilisez l'ID de Personel
+                    employeeStatement.setInt(1, employee.getId()); // Utilisez l'ID de Personel
                     employeeStatement.setString(2, employee.getEmail());
                     employeeStatement.setObject(3, employee.getDateRecrutement());
 
                     int employeeRowsAffected = employeeStatement.executeUpdate();
 
                     if (employeeRowsAffected == 1) {
+
                         // Si tout s'est bien passé, retournez l'employé ajouté
                         addedEmployee = Optional.of(employee);
                     }

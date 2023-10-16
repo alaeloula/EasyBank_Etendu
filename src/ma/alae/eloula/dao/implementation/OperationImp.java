@@ -121,6 +121,58 @@ public class OperationImp implements OperationI {
         return success;
     }
 
+    public boolean effectuerTransfertAvecTransaction(int compteSourceNumero, int compteDestinationNumero, double montant, int employeId) {
+
+        try {
+
+
+                    // Démarrez une transaction
+                    connection.setAutoCommit(false);
+
+            // Effectuer le retrait du compte source
+            boolean retraitReussi = TrRetrait(compteSourceNumero, montant, employeId);
+
+            if (retraitReussi) {
+                // Effectuer le versement sur le compte de destination
+                boolean versementReussi = TrVersement(compteDestinationNumero, montant, employeId);
+
+                if (versementReussi) {
+                    // Enregistrer l'opération de transfert avec le temps de la transaction
+                    String sql = "INSERT INTO Operation (type, datecreation, montant, compte_numero, employe_id,compteDestinationNumero) VALUES (?, ?, ?, ?, ?, ?)";
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    preparedStatement.setString(1, "TRANSFERT");
+                    preparedStatement.setObject(2, new java.sql.Timestamp(new Date().getTime())); // Temps de la transaction
+                    preparedStatement.setDouble(3, montant);
+                    preparedStatement.setInt(4, compteSourceNumero);
+                    preparedStatement.setInt(6, compteDestinationNumero);
+                    preparedStatement.setInt(5, employeId);
+
+                    int rowsAffected = preparedStatement.executeUpdate();
+
+                    if (rowsAffected == 1) {
+                        // Validez la transaction
+                        connection.commit();
+                        return true;
+                    }
+                }
+            }
+
+            // En cas d'erreur, annulez la transaction
+            connection.rollback();
+            return false;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            try {
+                if (connection != null) {
+                    connection.rollback();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+    }
+
     public boolean supprimerOperation(int operationId) {
         boolean success = false;
         try {
@@ -178,6 +230,88 @@ public class OperationImp implements OperationI {
         }
 
         return Optional.empty();
+    }
+
+
+
+    private boolean TrRetrait(int compteNumero, double montant,int employeId) {
+        boolean success = false;
+        try {
+            // Vérifier d'abord si le compte existe et récupérer son solde actuel
+            String selectCompteSql = "SELECT solde FROM Compte WHERE numero = ?";
+            PreparedStatement selectCompteStatement = connection.prepareStatement(selectCompteSql);
+            selectCompteStatement.setInt(1, compteNumero);
+            ResultSet compteResultSet = selectCompteStatement.executeQuery();
+
+            if (compteResultSet.next()) {
+                double soldeActuel = compteResultSet.getDouble("solde");
+
+                // Vérifier si le solde est suffisant pour le retrait
+                if (soldeActuel >= montant) {
+                    double nouveauSolde = soldeActuel - montant;
+
+                    // Mettre à jour le solde du compte
+                    String updateSoldeSql = "UPDATE Compte SET solde = ? WHERE numero = ?";
+                    PreparedStatement updateSoldeStatement = connection.prepareStatement(updateSoldeSql);
+                    updateSoldeStatement.setDouble(1, nouveauSolde);
+                    updateSoldeStatement.setInt(2, compteNumero);
+                    int soldeUpdated = updateSoldeStatement.executeUpdate();
+
+
+                    if (soldeUpdated == 1) {
+                        success = true;
+                    }
+                }
+            }
+
+            // Assurez-vous de libérer les ressources
+            //selectCompteResultSet.close();
+            selectCompteStatement.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return success;
+    }
+    private boolean TrVersement(int compteNumero, double montant,int employeId) {
+        boolean success = false;
+        try {
+            // Vérifier d'abord si le compte existe et récupérer son solde actuel
+            String selectCompteSql = "SELECT solde FROM Compte WHERE numero = ?";
+            PreparedStatement selectCompteStatement = connection.prepareStatement(selectCompteSql);
+            selectCompteStatement.setInt(1, compteNumero);
+            ResultSet compteResultSet = selectCompteStatement.executeQuery();
+
+            if (compteResultSet.next()) {
+                double soldeActuel = compteResultSet.getDouble("solde");
+                double nouveauSolde = soldeActuel + montant;
+
+                // Mettre à jour le solde du compte
+                String updateSoldeSql = "UPDATE Compte SET solde = ? WHERE numero = ?";
+                PreparedStatement updateSoldeStatement = connection.prepareStatement(updateSoldeSql);
+                updateSoldeStatement.setDouble(1, nouveauSolde);
+                updateSoldeStatement.setInt(2, compteNumero);
+                int soldeUpdated = updateSoldeStatement.executeUpdate();
+
+                if (soldeUpdated == 1) {
+                    // Enregistrer l'opération de versement
+
+
+
+                        success = true;
+
+
+                }
+            }
+
+            // Assurez-vous de libérer les ressources
+            //selectCompteResultSet.close();
+            //selectCompteStatement.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return success;
     }
 
 }

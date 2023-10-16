@@ -7,6 +7,8 @@ import java.util.Optional;
 public interface OperationI {
     boolean effectuerVersement(int compteNumero, double montant,int employeId);
     boolean effectuerRetrait(int compteNumero, double montant,int employeId);
+
+    boolean effectuerTransfertAvecTransaction(int compteSourceNumero, int compteDestinationNumero, double montant, int employeId);
     boolean supprimerOperation(int operationId);
     Optional<Operation> findOperationById(int operationId);
 }

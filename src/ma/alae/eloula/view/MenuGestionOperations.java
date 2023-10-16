@@ -3,6 +3,7 @@ package ma.alae.eloula.view;
 import ma.alae.eloula.classes.Operation;
 import ma.alae.eloula.dao.implementation.CompteImp;
 import ma.alae.eloula.dao.implementation.OperationImp;
+import ma.alae.eloula.services.OperationService;
 
 import java.util.Optional;
 import java.util.Scanner;
@@ -11,6 +12,7 @@ public class MenuGestionOperations {
     Scanner scanner=new Scanner(System.in);
     //CompteImp cimp= new CompteImp();
     OperationImp o1=new OperationImp();
+    OperationService operationService=new OperationService(o1);
     public MenuGestionOperations() {
         // Scanner scanner = new Scanner(System.in);
         //GererOperations gererOperations = new GererOperations(operationDAO); // Remplacez par votre DAO d'opérations
@@ -21,7 +23,8 @@ public class MenuGestionOperations {
             System.out.println("=== Menu de Gestion des Opérations ===");
             System.out.println("1. Effectuer un versement");
             System.out.println("2. Effectuer un retrait");
-            System.out.println("3. Rechercher une opération par ID");
+            System.out.println("3. effectuer un transfert");
+            System.out.println("4. Rechercher une opération par ID");
 
             System.out.println("0. Retour au menu principal");
             System.out.print("Entrez votre choix : ");
@@ -65,6 +68,25 @@ public class MenuGestionOperations {
                     }
                     break;
                 case 3:
+                    System.out.print("vous etes l employee avec l id? : ");
+                    employe_id = scanner.nextInt();
+                    System.out.print("Entrez le numéro de compte Retrait: ");
+                     numeroCompteRetrait = scanner.nextInt();
+                     System.out.print("Entrez le montant à retirer : ");
+                    montantRetrait = scanner.nextDouble();
+                    System.out.print("Entrez le numéro de compte de Versement: ");
+                     numeroCompteVersement = scanner.nextInt();
+
+
+                    boolean transfertReussi = operationService.effectuerTransfert(numeroCompteRetrait,numeroCompteVersement, montantRetrait,employe_id);
+
+                    if (transfertReussi) {
+                        System.out.println("Le transfert a été effectué avec succès.");
+                    } else {
+                        System.out.println("Erreur lors de l'effectuation du transfert.");
+                    }
+                    break;
+                case 4:
                     // Rechercher une opération par ID
                     System.out.print("Entrez l'ID de l'opération à rechercher : ");
                     int operationIdARechercher = scanner.nextInt();

@@ -15,6 +15,7 @@ public class MainPrincipale {
             System.out.println("4. Gérer les missions");
             System.out.println("5. Gérer les operation");
             System.out.println("6. Gérer les Agence");
+            System.out.println("7. simulation des credit");
 
             System.out.println("0. Quitter");
             System.out.print("Entrez votre choix : ");
@@ -49,9 +50,13 @@ public class MainPrincipale {
                     break;
                 case 6:
                         new GererAgence();
+                        break;
+                case 7:
+                    new GererSimulation();
                 case 0:
                     System.out.println("Merci d'avoir utilisé notre application !");
                     break;
+
                 default:
                     System.out.println("Choix non valide. Veuillez réessayer.");
             }
